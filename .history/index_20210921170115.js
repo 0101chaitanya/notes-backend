@@ -76,7 +76,11 @@ app.post("/api/notes/", (req, res, next) => {
         important: body.important || false,
         date: new Date(),
     });
-    note.save().then((note) => (note).toJSON()).then(formattedNote => res.json(formattedNote)).catch(err => next(err));
+    note.save().then((note) => {
+
+        res.json(note);
+
+    }).catch(err => next(err));
 
 })
 

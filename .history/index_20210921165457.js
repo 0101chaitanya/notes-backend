@@ -54,7 +54,7 @@ app.put("/api/notes/:id", (req, res, next) => {
 
 })
 
-app.delete("/api/notes/:id", (req, res, next) => {
+app.delete("/api/notes/:id", (req, res) => {
     const id = req.params.id;
 
     Note.findByIdAndRemove(id).then((note) => {
@@ -63,7 +63,7 @@ app.delete("/api/notes/:id", (req, res, next) => {
     }).catch(e => next(e));
 })
 
-app.post("/api/notes/", (req, res, next) => {
+app.post("/api/notes/", (req, res) => {
     const body = req.body;
     if (!body.content) {
         return res.status(400).json({
@@ -76,7 +76,11 @@ app.post("/api/notes/", (req, res, next) => {
         important: body.important || false,
         date: new Date(),
     });
-    note.save().then((note) => (note).toJSON()).then(formattedNote => res.json(formattedNote)).catch(err => next(err));
+    note.save().then((note) => {
+
+        res.json(note);
+
+    }).catch(err => next(err));
 
 })
 
@@ -92,9 +96,6 @@ const errorHandler = (err, req, res, next) => {
     console.log(err.message);
     if (err.name === "CastError") {
         return res.status(400).send({ error: "malformed id" })
-    } else if (err.name === "validationError") {
-        return res.status(400).send({ error: err.message })
-
     }
     next(err)
 }
