@@ -13,6 +13,13 @@ app.use(express.json());
 app.use(express.static("build"));
 app.use(morgan("dev"))
 
+const errorHandler = (err, req, res, next) => {
+    console.log(err.message);
+    if (err.name === "CastError") {
+        return res.status(400).send({ error: "malformed id" })
+    }
+}
+
 app.get("/", (req, res) => {
     res.send("<h1>Hello world!</h1>")
 });
@@ -38,29 +45,13 @@ app.get("/api/notes/:id", (req, res, next) => {
 
 })
 
-app.put("/api/notes/:id", (req, res, next) => {
-
-    const body = req.body;
-    console.log(req.body);
-    const note = {
-        content: body.content,
-        important: body.important,
-    };
-
-    Note.findByIdAndUpdate(req.params.id, note, { new: true }).then((updated) => {
-
-        res.json(updated);
-    }).catch((err) => console.error(err));
-
-})
-
 app.delete("/api/notes/:id", (req, res) => {
     const id = req.params.id;
 
-    Note.findByIdAndRemove(id).then((note) => {
+    Note.findByIdAndDelete(id).then((note) => {
 
-        res.status(204).end()
-    }).catch(e => next(e));
+        res.json(note);
+    })
 })
 
 app.post("/api/notes/", (req, res) => {
@@ -83,25 +74,6 @@ app.post("/api/notes/", (req, res) => {
     })
 
 })
-
-const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' })
-}
-
-// handler of requests with unknown endpoint
-app.use(unknownEndpoint)
-
-
-const errorHandler = (err, req, res, next) => {
-    console.log(err.message);
-    if (err.name === "CastError") {
-        return res.status(400).send({ error: "malformed id" })
-    }
-    next(err)
-}
-
-app.use(errorHandler);
-
 
 
 const PORT = process.env.PORT || 3001;

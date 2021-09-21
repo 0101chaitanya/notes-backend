@@ -38,22 +38,6 @@ app.get("/api/notes/:id", (req, res, next) => {
 
 })
 
-app.put("/api/notes/:id", (req, res, next) => {
-
-    const body = req.body;
-    console.log(req.body);
-    const note = {
-        content: body.content,
-        important: body.important,
-    };
-
-    Note.findByIdAndUpdate(req.params.id, note, { new: true }).then((updated) => {
-
-        res.json(updated);
-    }).catch((err) => console.error(err));
-
-})
-
 app.delete("/api/notes/:id", (req, res) => {
     const id = req.params.id;
 
