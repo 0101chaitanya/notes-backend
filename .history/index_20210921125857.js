@@ -5,7 +5,7 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const app = express();
-const Note = require('./models/note');
+const note = require('./models/note');
 
 
 app.use(cors());
@@ -24,12 +24,14 @@ app.get("/api/notes", (req, res) => {
 
 app.get("/api/notes/:id", (req, res) => {
     const id = req.params.id;
+    const note = notes.find(note => note.id.toString() === id);
 
-    Note.findById(id).then((note) => {
-
+    if (note) {
         res.json(note);
-    })
 
+    } else {
+        res.status(400).send("No data found");
+    }
 })
 
 app.delete("/api/notes/:id", (req, res) => {
@@ -51,16 +53,15 @@ app.post("/api/notes/", (req, res) => {
         })
 
     }
-    const note = new Note({
+    const note = {
         content: body.content,
         important: body.important || false,
         date: new Date(),
-    });
-    note.save().then((note) => {
-
-        res.json(note);
-
-    })
+        id: maxId()
+    };
+    console.log(notes)
+    notes = notes.concat(note);
+    res.json(note);
 
 })
 

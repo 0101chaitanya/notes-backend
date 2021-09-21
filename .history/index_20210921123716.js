@@ -1,15 +1,27 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const morgan = require('morgan');
+const app = express();
+//let notes = require('./db');
 require('dotenv').config();
 
-const app = express();
-const Note = require('./models/note');
+const url = process.env.MONGO_URI;
 
+mongoose.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
+
+const noteSchema = new mongoose.Schema({
+    content: String,
+    date: Date,
+    important: Boolean,
+
+})
+
+const Note = mongoose.model("Note", noteSchema);
 
 app.use(cors());
-app.use(morgan("dev"))
 app.use(express.json());
 app.use(express.static("build"));
 app.get("/", (req, res) => {
@@ -24,12 +36,14 @@ app.get("/api/notes", (req, res) => {
 
 app.get("/api/notes/:id", (req, res) => {
     const id = req.params.id;
+    const note = notes.find(note => note.id.toString() === id);
 
-    Note.findById(id).then((note) => {
-
+    if (note) {
         res.json(note);
-    })
 
+    } else {
+        res.status(400).send("No data found");
+    }
 })
 
 app.delete("/api/notes/:id", (req, res) => {
@@ -51,16 +65,15 @@ app.post("/api/notes/", (req, res) => {
         })
 
     }
-    const note = new Note({
+    const note = {
         content: body.content,
         important: body.important || false,
         date: new Date(),
-    });
-    note.save().then((note) => {
-
-        res.json(note);
-
-    })
+        id: maxId()
+    };
+    console.log(notes)
+    notes = notes.concat(note);
+    res.json(note);
 
 })
 

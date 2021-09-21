@@ -1,35 +1,33 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
-const morgan = require('morgan');
-require('dotenv').config();
-
+constmongoose = require('mongoose');
 const app = express();
-const Note = require('./models/note');
+let notes = require('./db');
+
+const url = `mongodb+srv://0101chaitanya:Webdev%400101@cluster0.ojoav.mongodb.net/fso?authSource=admin&replicaSet=atlas-yx635f-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true`;
+
 
 
 app.use(cors());
-app.use(morgan("dev"))
 app.use(express.json());
 app.use(express.static("build"));
 app.get("/", (req, res) => {
     res.send("<h1>Hello world!</h1>")
 });
 app.get("/api/notes", (req, res) => {
-    Note.find({}).then(notes => {
-        res.json(notes);
-
-    })
+    res.json(notes);
 })
 
 app.get("/api/notes/:id", (req, res) => {
     const id = req.params.id;
+    const note = notes.find(note => note.id.toString() === id);
 
-    Note.findById(id).then((note) => {
-
+    if (note) {
         res.json(note);
-    })
 
+    } else {
+        res.status(400).send("No data found");
+    }
 })
 
 app.delete("/api/notes/:id", (req, res) => {
@@ -51,16 +49,15 @@ app.post("/api/notes/", (req, res) => {
         })
 
     }
-    const note = new Note({
+    const note = {
         content: body.content,
         important: body.important || false,
         date: new Date(),
-    });
-    note.save().then((note) => {
-
-        res.json(note);
-
-    })
+        id: maxId()
+    };
+    console.log(notes)
+    notes = notes.concat(note);
+    res.json(note);
 
 })
 
