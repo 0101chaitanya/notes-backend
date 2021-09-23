@@ -6,16 +6,18 @@ const app = require('../app');
 const api = supertest(app);
 const Note = require('../models/note');
 
+
+
 beforeEach(async() => {
-    await Note.deleteMany({})
-
-    for (let note of helper.initialNotes) {
-        let noteObject = new Note(note)
-        await noteObject.save()
-    }
+    await Note.deleteMany({});
+    console.log("cleared");
+    helper.initialNotes.forEach(async(note) => {
+        let noteObject = new Note(note);
+        await noteObject.save();
+        console.log("saved");
+    })
+    console.log("done")
 })
-
-
 
 test("notes are returned as json", async() => {
     await api.get("/api/notes").expect(200).expect("Content-Type", /application\/json/)

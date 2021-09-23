@@ -13,66 +13,66 @@ notesRouter.get("/", async(req, res) => {
 notesRouter.get("/:id", async(req, res, next) => {
     const id = req.params.id;
 
+    try {
 
-    const note = await Note.findById(id);
+        const note = await Note.findById(id);
 
-    if (note) {
-        return res.json(note);
+        if (note) {
+            return res.json(note);
 
-    } else {
-        return res.status(404).end();
-    }
+        } else {
+            return res.status(404).end();
+        }
+    } catch (e) {
 
+        return next(e)
+
+    };
 
 })
 
 notesRouter.put("/:id", async(req, res, next) => {
 
-
+    const body = req.body;
     const note = {
         content: body.content,
         important: body.important,
-        date: new Date()
     };
-    const body = req.body;
+    try {
 
-    const updated = await Note.findByIdAndUpdate(req.params.id, note, { new: true });
+        const updated = await Note.findByIdAndUpdate(req.params.id, note, { new: true });
 
-    res.json(updated);
+        res.json(updated);
+    } catch (err) {
 
+        return next(err);
+    }
 
 })
 
-notesRouter.delete("/:id", async(req, res, next) => {
+notesRouter.delete("/:id", (req, res, next) => {
     const id = req.params.id;
 
-    await Note.findByIdAndRemove(id);
-    res.status(204).end()
+    Note.findByIdAndRemove(id).then((note) => {
 
+        res.status(204).end()
+    }).catch(e => next(e));
 })
 
-notesRouter.post("/", async(req, res, next) => {
+notesRouter.post("/", (req, res, next) => {
     const body = req.body;
-
     if (!body.content) {
         return res.status(400).json({
             error: "Content missing"
         })
 
     }
-
-
     const note = new Note({
         content: body.content,
         important: body.important || false,
         date: new Date(),
     });
-
-    const noteRes = await note.save();
-
-    const formattedNote = noteRes.toJSON();
-    res.json(formattedNote);
-
+    note.save().then((note) => (note).toJSON()).then(formattedNote => res.json(formattedNote)).catch(err => next(err));
 
 })
 

@@ -13,16 +13,21 @@ notesRouter.get("/", async(req, res) => {
 notesRouter.get("/:id", async(req, res, next) => {
     const id = req.params.id;
 
+    try {
 
-    const note = await Note.findById(id);
+        const note = await Note.findById(id);
 
-    if (note) {
-        return res.json(note);
+        if (note) {
+            return res.json(note);
 
-    } else {
-        return res.status(404).end();
-    }
+        } else {
+            return res.status(404).end();
+        }
+    } catch (e) {
 
+        return next(e)
+
+    };
 
 })
 

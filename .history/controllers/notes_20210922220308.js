@@ -13,33 +13,42 @@ notesRouter.get("/", async(req, res) => {
 notesRouter.get("/:id", async(req, res, next) => {
     const id = req.params.id;
 
+    try {
 
-    const note = await Note.findById(id);
+        const note = await Note.findById(id);
 
-    if (note) {
-        return res.json(note);
+        if (note) {
+            return res.json(note);
 
-    } else {
-        return res.status(404).end();
-    }
+        } else {
+            return res.status(404).end();
+        }
+    } catch (e) {
 
+        return next(e)
+
+    };
 
 })
 
 notesRouter.put("/:id", async(req, res, next) => {
 
+    try {
 
-    const note = {
-        content: body.content,
-        important: body.important,
-        date: new Date()
-    };
-    const body = req.body;
+        const note = {
+            content: body.content,
+            important: body.important,
+            date: new Date()
+        };
+        const body = req.body;
 
-    const updated = await Note.findByIdAndUpdate(req.params.id, note, { new: true });
+        const updated = await Note.findByIdAndUpdate(req.params.id, note, { new: true });
 
-    res.json(updated);
+        res.json(updated);
+    } catch (err) {
 
+        return next(err);
+    }
 
 })
 
@@ -71,7 +80,7 @@ notesRouter.post("/", async(req, res, next) => {
     const noteRes = await note.save();
 
     const formattedNote = noteRes.toJSON();
-    res.json(formattedNote);
+    return res.json(formattedNote);
 
 
 })
