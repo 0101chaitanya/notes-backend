@@ -1,0 +1,3 @@
+{
+  "jest.jestCommandLine": "jest --watchAll #runs all tests"
+}

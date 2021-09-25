@@ -4,7 +4,7 @@ const Note = require("../models/note");
 const User = require("../models/user");
 const getTokenFrom = (req) => {
     const authorization = req.get("authorization");
-    if (authorization && authorization.toLowerCase().startsWith("bearer")) {
+    if (authorization && authorization.toLowerCase() === "bearer") {
         return authorization.substring(7);
     }
     return null;
@@ -63,12 +63,10 @@ notesRouter.post("/", async(req, res, next) => {
 
     const token = getTokenFrom(req);
     const decodedToken = jwt.verify(token, process.env.SECRET);
-    console.log(decodedToken)
     if (!token || !decodedToken.id) {
         return res.status(401).json({ error: "token missing or invalid" });
     }
     const user = await User.findById(body.user);
-    console.log("user", user);
     const note = new Note({
         content: body.content,
         important: body.important || false,
