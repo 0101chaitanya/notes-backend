@@ -5,12 +5,11 @@ const jwt = require("jsonwebtoken");
 const {
     validPassword,
     genPassword,
-    issueJWT,
-    isAdmin
+    issueJWT
 } = require("../utils/helpers");
 const passport = require("passport");
 
-usersRouter.get("/showAll", passport.authenticate("jwt", { session: false }), isAdmin, async(req, res) => {
+usersRouter.get("/showAll", passport.authenticate("jwt", { session: false }), async(req, res) => {
     const users = await User.find({}).populate("notes", { content: 1, date: 1 });
     res.json(users);
 });
@@ -28,7 +27,7 @@ usersRouter.post("/login", async(req, res) => {
         res.json({ success: true, user, token, expiresIn: expires })
 
     } else {
-        res.status(401).json({ success: false, msg: "you entered the wrong password" })
+        res.status(401).json({ success: true, msg: "you entered the wrong password" })
     }
 
 
@@ -37,14 +36,13 @@ usersRouter.post("/login", async(req, res) => {
 
 
 usersRouter.post("/register", async(req, res) => {
-    const { username, password, name, admin } = req.body;
+    const { username, password } = req.body;
     const { salt, hash } = await genPassword(password);
 
     const newUser = new User({
         username,
         hash,
         salt,
-        name,
         admin: admin ? admin : false,
     });
     const user = await newUser.save();

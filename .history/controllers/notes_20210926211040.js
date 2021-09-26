@@ -2,14 +2,14 @@ const notesRouter = require("express").Router();
 const jwt = require("jsonwebtoken");
 const Note = require("../models/note");
 const User = require("../models/user");
-const passport = require("passport");
-notesRouter.get("/", passport.authenticate("jwt", { session: false }), async(req, res) => {
+
+notesRouter.get("/", async(req, res) => {
     const notes = await Note.find({});
 
     res.json(notes);
 });
 
-notesRouter.get("/:id", passport.authenticate("jwt", { session: false }), async(req, res, next) => {
+notesRouter.get("/:id", async(req, res, next) => {
     const id = req.params.id;
 
     const note = await Note.findById(id);
@@ -21,7 +21,7 @@ notesRouter.get("/:id", passport.authenticate("jwt", { session: false }), async(
     }
 });
 
-notesRouter.put("/:id", passport.authenticate("jwt", { session: false }), async(req, res, next) => {
+notesRouter.put("/:id", async(req, res, next) => {
     const body = req.body;
 
     const user = await User.findById(body.user);
@@ -43,14 +43,14 @@ notesRouter.put("/:id", passport.authenticate("jwt", { session: false }), async(
     res.json(updated);
 });
 
-notesRouter.delete("/:id", passport.authenticate("jwt", { session: false }), async(req, res, next) => {
+notesRouter.delete("/:id", async(req, res, next) => {
     const id = req.params.id;
 
     await Note.findByIdAndRemove(id);
     res.status(204).end();
 });
 
-notesRouter.post("/", passport.authenticate("jwt", { session: false }), async(req, res, next) => {
+notesRouter.post("/", async(req, res, next) => {
     const body = req.body;
 
     const token = getTokenFrom(req);

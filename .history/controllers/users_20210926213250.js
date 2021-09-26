@@ -10,7 +10,7 @@ const {
 } = require("../utils/helpers");
 const passport = require("passport");
 
-usersRouter.get("/showAll", passport.authenticate("jwt", { session: false }), isAdmin, async(req, res) => {
+usersRouter.get("/showAll", passport.authenticate("jwt", { session: false }), async(req, res) => {
     const users = await User.find({}).populate("notes", { content: 1, date: 1 });
     res.json(users);
 });

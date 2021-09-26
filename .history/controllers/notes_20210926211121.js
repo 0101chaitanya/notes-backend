@@ -2,7 +2,7 @@ const notesRouter = require("express").Router();
 const jwt = require("jsonwebtoken");
 const Note = require("../models/note");
 const User = require("../models/user");
-const passport = require("passport");
+
 notesRouter.get("/", passport.authenticate("jwt", { session: false }), async(req, res) => {
     const notes = await Note.find({});
 
