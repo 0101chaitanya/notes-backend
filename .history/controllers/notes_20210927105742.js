@@ -38,7 +38,7 @@ notesRouter.put("/:id", passport.authenticate("jwt", { session: false }), async(
 
     //await user.save();
     console.log(updated);
-    res.json(updated);
+    //res.json( updated);
 });
 
 notesRouter.delete("/:id", passport.authenticate("jwt", { session: false }), async(req, res, next) => {
