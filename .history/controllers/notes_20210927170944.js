@@ -62,7 +62,7 @@ notesRouter.post("/", passport.authenticate("jwt", { session: false }), async(re
 
     const savedNote = await note.save();
 
-    userFound.notes = userFound.notes.concat(savedNote);
+    userFound.notes = user.notes.concat(savedNote);
 
     await userFound.save();
     res.json(savedNote);

@@ -51,7 +51,7 @@ notesRouter.delete("/:id", passport.authenticate("jwt", { session: false }), asy
 notesRouter.post("/", passport.authenticate("jwt", { session: false }), async(req, res, next) => {
     const body = req.body;
 
-    const userFound = await User.findById(body.user).lean();
+    const userFound = await User.findById(body.user);
     console.log("user", userFound);
     const note = new Note({
         content: body.content,
@@ -62,7 +62,7 @@ notesRouter.post("/", passport.authenticate("jwt", { session: false }), async(re
 
     const savedNote = await note.save();
 
-    userFound.notes = userFound.notes.concat(savedNote);
+    userFound.notes = user.notes.concat(savedNote);
 
     await userFound.save();
     res.json(savedNote);
